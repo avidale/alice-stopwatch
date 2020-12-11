@@ -60,11 +60,11 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
             response.suggests = ['стоп', 'время']
         elif 'stop' in forms:
             if not us.t:
-                response.set_rich_text('У вас не поставлен таймер! Скажите "Старт", чтобы начать отсчёт.')
+                response.set_rich_text('У вас не поставлен секундомер! Скажите "Старт", чтобы начать отсчёт.')
                 response.suggests.append('старт')
             else:
                 response.set_rich_text(
-                    f'Остановила секундомер. '
+                    f'Остановила секундомер! '
                     f'Ваше время - {human_duration(diff)}.'
                     f'\nЧтобы запустить новый секундомер, скажите "Старт".'
                 )
@@ -72,7 +72,7 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
                 us.t = None
         elif 'time' in forms:
             if not us.t:
-                response.set_rich_text('У вас не поставлен таймер! Скажите "Старт", чтобы начать отсчёт.')
+                response.set_rich_text('У вас не поставлен секундомер! Скажите "Старт", чтобы начать отсчёт.')
                 response.suggests.append('старт')
             else:
                 response.set_rich_text(
@@ -86,6 +86,8 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
             if us.t:
                 rt += f'\nВаше текущее время - {human_duration(diff)}.'
             rt += f'\nЧтобы запустить новый секундомер, скажите "Старт".'
+            rt += f'\nЧтобы узнать, сколько времни прошло, скажите "Время".'
+            rt += f'Чтобы остановить таймер, скажите "Стоп".'
             response.set_rich_text(rt)
             response.suggests.extend(['старт', 'стоп', 'время'])
 
