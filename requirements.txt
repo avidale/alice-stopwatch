@@ -1,0 +1,4 @@
+attrs
+tgalice>=0.2.11
+dnspython
+pymongo
