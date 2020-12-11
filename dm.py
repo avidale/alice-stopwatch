@@ -6,6 +6,7 @@ import attr
 import tgalice
 import yaml
 from tgalice.dialog import Response
+from tgalice.nlu.basic_nlu import like_help
 from tgalice.nlu.matchers import make_matcher_with_regex, TFIDFMatcher, TextNormalization
 from tgalice.utils.serialization import Serializeable
 
@@ -82,14 +83,16 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
                 )
                 response.suggests.extend(['старт', 'стоп', 'время'])
         else:
-            rt = 'Вы в навыке "Мой секундомер".'
+            rt = 'Вы в навыке "Мой секундомер". Я умею засекать время!'
             if us.t:
                 rt += f'\nВаше текущее время - {human_duration(diff)}.'
             rt += f'\nЧтобы запустить новый секундомер, скажите "Старт".'
             rt += f'\nЧтобы узнать, сколько времни прошло, скажите "Время".'
             rt += f'Чтобы остановить таймер, скажите "Стоп".'
+            if ctx.session_is_new() or like_help(ctx.message_text or ''):
+                rt += f'Чтобы выйти из навыка, скажите "Хватит".'
             response.set_rich_text(rt)
-            response.suggests.extend(['старт', 'стоп', 'время'])
+            response.suggests.extend(['старт', 'стоп', 'время', 'хватит'])
 
         response.user_object['user'] = us.to_dict()
         return response
