@@ -18,6 +18,7 @@ class UserState(Serializeable):
     t: Optional[float] = attr.ib(default=None)
 
 
+
 class WatchDM(tgalice.dialog_manager.BaseDialogManager):
     def __init__(self, root_dir='data', **kwargs):
         super(WatchDM, self).__init__(**kwargs)
@@ -38,7 +39,8 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
 
     def respond(self, ctx: tgalice.dialog.Context):
         uo = ctx.user_object or {}
-        us = UserState(**uo.get('user', {}))
+        uu = uo.get('user', {}) or uo.get('application', {})
+        us = UserState(**uu)
         t = time.time()
         diff = None
         if us.t:
@@ -48,7 +50,7 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
 
         response = Response(
             'привет',
-            user_object={'user': us.to_dict()}
+            user_object={'user': us.to_dict(), 'application': us.to_dict()}
         )
 
         if 'start' in forms:
@@ -82,6 +84,15 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
                     f'Чтобы остановить этот, скажите "Стоп".'
                 )
                 response.suggests.extend(['старт', 'стоп', 'время'])
+        elif 'thanks' in forms:
+            response.set_rich_text(
+                'Здорово, что вам нравится! '
+                '\nПожалуйста, поставьте оценку навыку в каталоге.'
+                '<a href="https://dialogs.yandex.ru/store/skills/a612946e-moj-sekundomer" hide=False>'
+            )
+        elif 'exit' in forms or tgalice.basic_nlu.like_exit(ctx.message_text):
+            response.set_rich_text('Всего хорошего! Чтобы запустить навык снова, скажите "включи навык Мой секундомер"')
+            response.commands.append(tgalice.COMMANDS.EXIT)
         else:
             rt = 'Вы в навыке "Мой секундомер". Я умею засекать время!'
             if us.t:
@@ -95,4 +106,5 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
             response.suggests.extend(['старт', 'стоп', 'время', 'хватит'])
 
         response.user_object['user'] = us.to_dict()
+        response.user_object['application'] = us.to_dict()
         return response
