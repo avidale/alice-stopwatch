@@ -89,7 +89,16 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
                 'Здорово, что вам нравится! '
                 '\nПожалуйста, поставьте оценку навыку в каталоге.'
                 '<a href="https://dialogs.yandex.ru/store/skills/a612946e-moj-sekundomer" hide=False>'
+                'страница навыка'
+                '</a>'
             )
+        elif 'swear' in forms:
+            response.set_rich_text(
+                'Пожалуйста, не ругайтесь. '
+                'Если вам не нравится, просто скажите "хватит", чтобы выйти из навыка. '
+                'Желаю вам хорошего дня!'
+            )
+            response.commands.append(tgalice.COMMANDS.EXIT)
         elif 'exit' in forms or tgalice.basic_nlu.like_exit(ctx.message_text):
             response.set_rich_text('Всего хорошего! Чтобы запустить навык снова, скажите "включи навык Мой секундомер"')
             response.commands.append(tgalice.COMMANDS.EXIT)
