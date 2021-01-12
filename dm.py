@@ -1,4 +1,5 @@
 import os
+import random
 import time
 from typing import Optional
 
@@ -16,7 +17,7 @@ from morph import human_duration
 @attr.s
 class UserState(Serializeable):
     t: Optional[float] = attr.ib(default=None)
-
+    n_tell_time: int = attr.ib(default=0)
 
 
 class WatchDM(tgalice.dialog_manager.BaseDialogManager):
@@ -78,11 +79,16 @@ class WatchDM(tgalice.dialog_manager.BaseDialogManager):
                 response.set_rich_text('У вас не поставлен секундомер! Скажите "Старт", чтобы начать отсчёт.')
                 response.suggests.append('старт')
             else:
-                response.set_rich_text(
-                    f'Ваше время - {human_duration(diff)}.'
-                    f'\nЧтобы запустить новый секундомер, скажите "Старт". '
-                    f'Чтобы остановить этот, скажите "Стоп".'
-                )
+                us.n_tell_time = (us.n_tell_time or 0)
+                if us.n_tell_time >= 3 and random.random() > 0.1:
+                    response.set_rich_text(human_duration(diff))
+                else:
+                    response.set_rich_text(
+                        f'Ваше время - {human_duration(diff)}.'
+                        f'\nЧтобы запустить новый секундомер, скажите "Старт". '
+                        f'Чтобы остановить этот, скажите "Стоп".'
+                    )
+                us.n_tell_time += 1
                 response.suggests.extend(['старт', 'стоп', 'время'])
         elif 'thanks' in forms:
             response.set_rich_text(
